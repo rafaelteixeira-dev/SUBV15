@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="../css/Desing.css" />
+    <link rel="stylesheet" href="../css/sub_settings.css" />
+    <title>Provas - SUB</title>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="logo">
+        <img
+          id="logoImg"
+          src="../assets/images/Logo.png"
+          alt="Sub"
+          style="height: 28px; vertical-align: middle"
+        />
+        <span>SUB</span>
+      </div>
+      <nav>
+        <a href="../index.html" class="secondary">Voltar</a>
+      </nav>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <h2>Provas e Atividades</h2>
+        <p class="note">Visão: <strong id="roleLabel"></strong></p>
+
+        <div id="studentView" data-role="student">
+          <h3>Minhas Provas</h3>
+          <ul id="myProvas" class="list"></ul>
+        </div>
+
+        <div id="profView" data-role="professor">
+          <h3>Provas da Turma</h3>
+          <button class="btn" id="addProvaBtn">Adicionar Prova</button>
+          <ul id="allProvas" class="list"></ul>
+        </div>
+
+        <div class="modal" id="provaModal">
+          <div class="modal-content card">
+            <h3 id="provaModalTitle">Nova Prova</h3>
+            <input
+              class="input"
+              id="provaTitle"
+              placeholder="Título da prova"
+            />
+            <input
+              class="input"
+              id="provaAluno"
+              placeholder="Aluno (apenas para nota individual)"
+            />
+            <input class="input" id="provaNota" placeholder="Nota (0-10)" />
+            <div style="text-align: right">
+              <button class="btn" id="saveProvaBtn">Salvar</button>
+              <button class="btn small" id="cancelProvaBtn">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Ajuda</h3>
+        <p class="note">
+          Use um e-mail terminando em <code>@aluno.com</code> ou
+          <code>@professor.com</code> para simular cada visão. O login padrão do
+          projeto pode setar <code>localStorage.user_email</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="clock-container">
+      <div id="brasiliaClock" class="clock-widget" aria-live="polite"></div>
+    </div>
+
+    <script src="../js/sub_settings.js"></script>
+    <script src="../js/sub.js"></script>
+    <script src="./js/provas.js"></script>
+  </body>
+</html>

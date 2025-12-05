@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/sub_settings.css" />
+    <link rel="stylesheet" href="../css/Login.css" />
+    <link rel="icon" href="../assets/images/Logo.png" />
+    <title>Login - SUB</title>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="logo">
+        <img id="logoImg" src="../assets/images/Logo.png" alt="Sub" />
+        <span>Sub</span>
+      </div>
+      <nav class="nav-links">
+        <a href="./Login.html" id="login-link" class="active">Login</a>
+        <span>|</span>
+        <a href="Cadastro.html" id="cadastro-link">Cadastro</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="login-container">
+        <h1>Login</h1>
+        <form class="login-form" id="loginForm">
+          <label for="email">Email:</label>
+          <div class="input-icon">
+            <img
+              class="icon-img"
+              id="userImg"
+              src="../assets/images/User.png"
+              alt="Usuário"
+            />
+            <input type="email" id="email" name="email" required />
+          </div>
+
+          <label for="password">Senha:</label>
+          <div class="input-icon">
+            <img
+              class="icon-img clickable"
+              id="toggleLoginPwd"
+              id="eyeImg"
+              src="../assets/images/Olho.png"
+              alt="Mostrar senha"
+            />
+            <input type="password" id="password" name="password" required />
+          </div>
+
+          <button type="submit">Entrar</button>
+        </form>
+        <p>Não tem uma conta? <a href="Cadastro.html">Cadastre-se</a></p>
+        <p><a href="./Cadastro.html">Esqueceu a senha?</a></p>
+      </div>
+    </main>
+
+    <div class="clock-container">
+      <div id="brasiliaClock" class="clock-widget" aria-live="polite"></div>
+    </div>
+
+    <script src="../js/sub_settings.js"></script>
+    <script src="../js/login.js"></script>
+    <script src="../js/sub.js"></script>
+  </body>
+</html>

@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/Desing.css" />
+    <link rel="icon" href="./assets/images/Logo.png" />
+    <title>Boletim - SUB</title>
+    <link rel="stylesheet" href="./css/sub_settings.css" />
+    <style>
+      
+      #custom-toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .custom-toast {
+        background-color: #fff3cd; 
+        color: #664d03;
+        padding: 15px 40px 15px 20px;
+        border-radius: 8px;
+        border: 1px solid #ffecb5;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.4s ease-in-out;
+        position: relative;
+      }
+      .custom-toast.show {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .custom-toast-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+        color: #856404;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="logo">
+        <img src="./assets/images/Logo.png" alt="Sub" />
+        <span>Sub</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#" id="home-link" class="active" onclick="showSection('home')"
+          >Home</a
+        >
+        <a href="#" id="boletim-link" onclick="showSection('boletim')"
+          >Boletim</a
+        >
+        <a href="#" id="plano-link" onclick="showSection('plano')">Plano</a>
+
+        <a href="#" id="provas-link" onclick="showSection('provas')">Provas</a>
+
+        <a href="#" id="sobre-link" onclick="showSection('sobre')">Sobre</a>
+        <button
+          class="btn settings-btn"
+          id="openSettingsBtn"
+          title="Configurações"
+          data-role="both"
+        >
+          ⚙️
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="home" class="section active">
+        <h1>Painel Principal</h1>
+        <section
+          class="card class-card collapsed"
+          id="classSection"
+          data-role="both"
+        >
+          <div class="class-header">
+            <div>
+              <h2>Minha Turma</h2>
+              <p id="classSummary" class="class-summary">
+                Nenhum aluno cadastrado
+              </p>
+            </div>
+            <button class="btn small outline" id="classToggleBtn" type="button">
+              Mostrar alunos
+            </button>
+          </div>
+          <div class="class-details" id="classDetails">
+            <ul id="classList" class="list"></ul>
+            <div class="class-actions" data-role="professor">
+              <input
+                class="input"
+                id="newStudentName"
+                placeholder="Nome do aluno"
+              />
+              <button class="btn small" id="addStudentBtn">
+                Adicionar aluno
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="card notifications-card collapsed"
+          id="notificationsSection"
+          data-role="professor"
+        >
+          <div class="notifications-header">
+            <div>
+              <h2>Comunicação com a Turma</h2>
+              <p id="notificationsSummary" class="notifications-helper">
+                Nenhum recado enviado
+              </p>
+            </div>
+            <button
+              class="btn small outline"
+              id="notificationToggleBtn"
+              type="button"
+            >
+              Mostrar painel
+            </button>
+          </div>
+
+          <div class="notifications-details" id="notificationsDetails">
+            <div class="notifications-controls">
+              <label class="notifications-filter">
+                Ver:
+                <select id="notificationFilterSelect" class="input small-input">
+                  <option value="all">Todos os recados</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="notificationsList" class="notifications-list"></div>
+
+            <div class="notification-form" data-role="professor">
+              <label for="notificationStudentSelect">Enviar para</label>
+              <select id="notificationStudentSelect" class="input">
+                <option value="all">Toda a turma</option>
+              </select>
+
+              <label for="notificationMessage">Mensagem</label>
+              <textarea
+                id="notificationMessage"
+                class="input"
+                rows="3"
+                placeholder="Digite a mensagem para o aluno escolhido"
+              ></textarea>
+
+              <button class="btn small" id="sendNotificationBtn" type="button">
+                Enviar notificação
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-card" id="frequencia-card">
+            <h2 class="card-title">Frequência Geral</h2>
+            <div class="card-content" id="frequencia-resumo-content"></div>
+          </div>
+          <div class="dashboard-card" id="plano-aula-card">
+            <h2 class="card-title">Próxima Aula Planejada</h2>
+            <div class="card-content" id="proxima-aula-content"></div>
+          </div>
+          <div class="dashboard-card" id="horas-card">
+            <h2 class="card-title">Horas de Estudo (Bimestre)</h2>
+            <div class="card-content">
+              <div class="horas-display">
+                <span>127</span>
+                <p>horas</p>
+              </div>
+              <p class="horas-meta">Meta: 150 horas</p>
+            </div>
+          </div>
+          <div class="dashboard-card agenda-card-collapsible collapsed" id="agenda-card">
+            <div class="agenda-header">
+              <h2 class="card-title">Agenda da Semana</h2>
+              <button class="btn small outline" id="agendaToggleBtn" type="button">
+                Mostrar calendário
+              </button>
+            </div>
+            <div class="card-content agenda-details" id="agenda-content">
+              <div id="calendar-container"></div>
+              <div id="agenda-events-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="boletim" class="section">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+          <h1 style="margin: 0;">
+            Boletim
+            <button id="abrirMediasBtn" class="secondary-btn">
+              Médias da Turma
+            </button>
+            <button id="abrirFrequenciaBtn" class="secondary-btn">
+              Frequência
+            </button>
+            <button
+              id="realizarChamadaBtn"
+              class="secondary-btn"
+              data-role="professor"
+              style="display: none"
+            >
+              Realizar Chamada
+            </button>
+          </h1>
+          <div id="boletimClock" class="boletim-clock-widget">
+            <div class="clock-icon">🕐</div>
+            <div class="clock-content">
+              <div class="clock-time" id="boletimClockTime">--:--:--</div>
+              <div class="clock-date" id="boletimClockDate">--/--/----</div>
+            </div>
+          </div>
+        </div>
+        <div class="boletim-container">
+          <table class="boletim-table">
+            <thead>
+              <tr>
+                <th class="col-componente">Componente Curricular</th>
+                <th class="col-bimestre">
+                  <div class="bimestre-header">
+                    <span class="bimestre-title">1º Bimestre</span>
+                    <span class="subheader">Nota do Aluno</span>
+                  </div>
+                </th>
+                <th class="col-bimestre">
+                  <div class="bimestre-header">
+                    <span class="bimestre-title">2º Bimestre</span>
+                    <span class="subheader">Nota do Aluno</span>
+                  </div>
+                </th>
+                <th class="col-bimestre">
+                  <div class="bimestre-header">
+                    <span class="bimestre-title">3º Bimestre</span>
+                    <span class="subheader">Nota do Aluno</span>
+                  </div>
+                </th>
+                <th class="col-bimestre">
+                  <div class="bimestre-header">
+                    <span class="bimestre-title">4º Bimestre</span>
+                    <span class="subheader">Nota do Aluno</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="materia-name">Matemática</td>
+                <td class="grade" data-materia="Matemática" data-bim="1">7</td>
+                <td class="grade" data-materia="Matemática" data-bim="2">8</td>
+                <td class="grade" data-materia="Matemática" data-bim="3">8</td>
+                <td class="grade" data-materia="Matemática" data-bim="4">7</td>
+              </tr>
+              <tr>
+                <td class="materia-name">Português</td>
+                <td class="grade" data-materia="Português" data-bim="1">7</td>
+                <td class="grade" data-materia="Português" data-bim="2">7</td>
+                <td class="grade" data-materia="Português" data-bim="3">7</td>
+                <td class="grade" data-materia="Português" data-bim="4">7</td>
+              </tr>
+              <tr>
+                <td class="materia-name">História</td>
+                <td class="grade" data-materia="História" data-bim="1">6</td>
+                <td class="grade" data-materia="História" data-bim="2">7</td>
+                <td class="grade" data-materia="História" data-bim="3">7</td>
+                <td class="grade" data-materia="História" data-bim="4">7</td>
+              </tr>
+              <tr>
+                <td class="materia-name">Geografia</td>
+                <td class="grade" data-materia="Geografia" data-bim="1">9</td>
+                <td class="grade" data-materia="Geografia" data-bim="2">9</td>
+                <td class="grade" data-materia="Geografia" data-bim="3">9</td>
+                <td class="grade" data-materia="Geografia" data-bim="4">9</td>
+              </tr>
+              <tr>
+                <td class="materia-name">Ciências</td>
+                <td class="grade" data-materia="Ciências" data-bim="1">9</td>
+                <td class="grade" data-materia="Ciências" data-bim="2">8</td>
+                <td class="grade" data-materia="Ciências" data-bim="3">9</td>
+                <td class="grade" data-materia="Ciências" data-bim="4">9</td>
+              </tr>
+              <tr>
+                <td class="materia-name">Artes</td>
+                <td class="grade" data-materia="Artes" data-bim="1">9</td>
+                <td class="grade" data-materia="Artes" data-bim="2">9</td>
+                <td class="grade" data-materia="Artes" data-bim="3">9</td>
+                <td class="grade" data-materia="Artes" data-bim="4">10</td>
+              </tr>
+              <tr>
+                <td class="materia-name">Educação Física</td>
+                <td class="grade" data-materia="Educação Física" data-bim="1">10</td>
+                <td class="grade" data-materia="Educação Física" data-bim="2">9</td>
+                <td class="grade" data-materia="Educação Física" data-bim="3">10</td>
+                <td class="grade" data-materia="Educação Física" data-bim="4">10</td>
+              </tr>
+              <tr>
+                <td class="materia-name">Inglês</td>
+                <td class="grade" data-materia="Inglês" data-bim="1">8</td>
+                <td class="grade" data-materia="Inglês" data-bim="2">8</td>
+                <td class="grade" data-materia="Inglês" data-bim="3">8</td>
+                <td class="grade" data-materia="Inglês" data-bim="4">8</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div id="mediasModal" class="modal" style="display: none">
+        <div class="modal-content" style="max-width: 900px; width: 90%">
+          <div class="modal-header">
+            <h2>Médias da Turma</h2>
+            <button id="fecharMediasBtn" class="close-btn" aria-label="Fechar">
+              ✕
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="boletim-table" id="mediasTable">
+              <thead>
+                <tr>
+                  <th>Componente</th>
+                  <th>1º Bimestre</th>
+                  <th>2º Bimestre</th>
+                  <th>3º Bimestre</th>
+                  <th>4º Bimestre</th>
+                </tr>
+              </thead>
+              <tbody id="mediasTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="frequenciaModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Frequência</h2>
+            <button
+              id="fecharFrequenciaBtn"
+              class="close-btn"
+              aria-label="Fechar"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="modal-body" id="frequenciaModalBody">
+            <div id="frequenciaAlunoSelector" data-role="professor" style="margin-bottom: 20px; display: none;">
+              <label for="frequenciaAlunoSelect" style="display: block; margin-bottom: 8px; font-weight: bold;">
+                Selecionar Aluno:
+              </label>
+              <select id="frequenciaAlunoSelect" class="input" style="max-width: 300px;">
+                <option value="">Todos os alunos</option>
+              </select>
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 16px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
+              <div>
+                <canvas id="frequenciaChart" width="200" height="200"></canvas>
+              </div>
+              <div id="frequenciaLegenda"></div>
+            </div>
+            <!-- Espaço para futuras funcionalidades -->
+          </div>
+        </div>
+      </div>
+
+      <div id="chamadaModal" class="modal" style="display: none">
+        <div class="modal-content" style="max-width: 500px; width: 90%">
+          <div class="modal-header">
+            <h2>Realizar Chamada</h2>
+            <button id="fecharChamadaBtn" class="close-btn" aria-label="Fechar">
+              ✕
+            </button>
+          </div>
+          <div class="modal-body">
+            <div style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button id="marcarTodosPresenteBtn" class="btn small" style="background-color: #1a4db7; color: white;">
+                  ✓ Marcar Todos Presentes
+                </button>
+                <button id="marcarTodosFaltaBtn" class="btn small" style="background-color: #ef4444; color: white;">
+                  ✗ Marcar Todos Faltas
+                </button>
+              </div>
+              <button id="carregarChamadaAnteriorBtn" class="btn small outline" style="font-size: 12px;">
+                  ↻ Carregar Chamada Anterior
+                </button>
+            </div>
+            <ul
+              id="chamadaList"
+              class="list"
+              style="max-height: 400px; overflow-y: auto"
+            >
+              <!-- A lista de alunos será inserida aqui -->
+            </ul>
+            <div style="text-align: right; margin-top: 20px">
+              <button id="salvarChamadaBtn" class="btn">Salvar Chamada</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="plano" class="section">
+        <h1>Planejamento de Aulas</h1>
+        <!-- Conteúdo do plano de aulas -->
+        
+        <!-- Visualização para Alunos -->
+        <div class="plano-container" data-role="student" id="aluno-planos-view">
+          <div class="planos-lista">
+            <h2>Planos de Aula Disponíveis</h2>
+            <div class="filtros">
+              <input
+                type="text"
+                id="filtroTextoAluno"
+                placeholder="Filtrar por turma, componente ou conteúdo"
+              />
+              <input type="month" id="filtroMesAluno" />
+            </div>
+            <table class="planos-table" id="planosTableAluno">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Turma</th>
+                  <th>Componente</th>
+                  <th>Objetivos</th>
+                  <th>Conteúdos</th>
+                  <th>Anexo</th>
+                </tr>
+              </thead>
+              <tbody id="planosTbodyAluno"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Visualização para Professores -->
+        <div class="plano-container" data-role="professor">
+          <form id="planoForm" class="plano-form">
+            <div class="form-row">
+              <label for="dataAula">Data</label>
+              <input type="date" id="dataAula" name="dataAula" required />
+            </div>
+            <div class="form-row">
+              <label for="turma">Turma</label>
+              <input
+                type="text"
+                id="turma"
+                name="turma"
+                placeholder="Ex.: 7ºA"
+                required
+              />
+            </div>
+            <div class="form-row">
+              <label for="componente">Componente</label>
+              <input
+                type="text"
+                id="componente"
+                name="componente"
+                placeholder="Ex.: Matemática"
+                required
+              />
+            </div>
+            <div class="form-row">
+              <label for="objetivos">Objetivos</label>
+              <textarea
+                id="objetivos"
+                name="objetivos"
+                rows="2"
+                placeholder="Descreva os objetivos da aula"
+                required
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <label for="habilidades">Habilidades (BNCC)</label>
+              <textarea
+                id="habilidades"
+                name="habilidades"
+                rows="2"
+                placeholder="Ex.: (EF07MA01) Resolver e elaborar problemas..."
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <label for="conteudos">Conteúdos</label>
+              <textarea
+                id="conteudos"
+                name="conteudos"
+                rows="2"
+                placeholder="Tópicos que serão trabalhados"
+                required
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <label for="metodologia">Metodologia</label>
+              <textarea
+                id="metodologia"
+                name="metodologia"
+                rows="2"
+                placeholder="Ex.: Aula expositiva, trabalho em grupo, gamificação"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <label for="atividades">Atividades</label>
+              <textarea
+                id="atividades"
+                name="atividades"
+                rows="2"
+                placeholder="Atividades previstas"
+                required
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <label for="recursos">Recursos</label>
+              <textarea
+                id="recursos"
+                name="recursos"
+                rows="2"
+                placeholder="Recursos didáticos (ex.: livro, projetor)"
+              ></textarea>
+            </div>
+
+            <hr style="border: 1px dashed #ccc; margin: 30px 0" />
+
+            <div class="form-row">
+              <label style="font-weight: bold; margin-bottom: 15px; display: block;">Tipo de Plano:</label>
+              <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                  <input 
+                    type="radio" 
+                    name="tipo-plano" 
+                    id="tipo-plano-manual" 
+                    value="manual" 
+                    checked
+                    style="margin-right: 8px;"
+                  />
+                  <span>Criar Plano Manualmente</span>
+                </label>
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                  <input 
+                    type="radio" 
+                    name="tipo-plano" 
+                    id="tipo-plano-pdf" 
+                    value="pdf"
+                    style="margin-right: 8px;"
+                  />
+                  <span>Anexar PDF com Plano</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="opcao-plano-manual" class="opcao-plano">
+              <div class="form-row">
+                <label for="avaliacao">Avaliação</label>
+                <textarea
+                  id="avaliacao"
+                  name="avaliacao"
+                  rows="2"
+                  placeholder="Como será avaliado"
+                ></textarea>
+              </div>
+              <div class="form-row">
+                <label for="observacoes">Observações</label>
+                <textarea
+                  id="observacoes"
+                  name="observacoes"
+                  rows="2"
+                  placeholder="Anotações adicionais, adaptações, etc."
+                ></textarea>
+              </div>
+            </div>
+
+            <div id="opcao-plano-pdf" class="opcao-plano" style="display: none;">
+              <div class="form-row">
+                <label for="planoPdf">Selecione o arquivo PDF com o plano de aula</label>
+                <input type="file" id="planoPdf" name="planoPdf" accept=".pdf" />
+                <small style="display: block; margin-top: 8px; color: #666;">
+                  Anexe um arquivo PDF contendo o plano de aula completo. O PDF será disponibilizado para visualização.
+                </small>
+              </div>
+            </div>
+            <input type="hidden" id="editingIndex" value="" />
+            <div class="form-actions">
+              <button type="submit" id="salvarPlanoBtn">Salvar</button>
+              <button
+                type="button"
+                id="cancelarEdicaoBtn"
+                style="display: none"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+
+          <div class="planos-lista">
+            <h2>Planos Salvos</h2>
+            <div class="filtros" data-role="professor">
+              <input
+                type="text"
+                id="filtroTexto"
+                placeholder="Filtrar por turma, componente ou conteúdo"
+              />
+              <input type="month" id="filtroMes" />
+            </div>
+            <table class="planos-table" id="planosTable">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Turma</th>
+                  <th>Componente</th>
+                  <th>Objetivos</th>
+                  <th>Conteúdos</th>
+                  <th>Anexo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="planosTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="provas" class="section">
+        <div id="professor-view" class="role-content">
+          <h2>Painel do Professor</h2>
+          <h3>Criar Nova Prova ou Atividade</h3>
+          <form class="question-form">
+            <div class="form-group">
+              <label for="componente">Componente Curricular</label>
+              <input
+                type="text"
+                id="componente-prova"
+                placeholder="Ex: Matemática"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="titulo-prova">Título da Prova/Atividade</label>
+              <input
+                type="text"
+                id="titulo-prova"
+                placeholder="Ex: Avaliação de Funções - 1º Bimestre"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="duracao-prova">Duração da Prova (em minutos)</label>
+              <input
+                type="number"
+                id="duracao-prova"
+                placeholder="Ex: 60 (deixe em branco para sem limite)"
+                min="1"
+              />
+            </div>
+
+            <div class="form-group form-group-inline">
+              <input type="checkbox" id="shuffle-prova" name="shuffle-prova" />
+              <label for="shuffle-prova"
+                >Embaralhar questões e alternativas para cada aluno</label
+              >
+            </div>
+
+            <hr style="border: 1px dashed #ccc; margin: 30px 0" />
+
+            <div class="form-group">
+              <label style="font-weight: bold; margin-bottom: 15px; display: block;">Tipo de Prova:</label>
+              <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                  <input 
+                    type="radio" 
+                    name="tipo-prova" 
+                    id="tipo-manual" 
+                    value="manual" 
+                    checked
+                    style="margin-right: 8px;"
+                  />
+                  <span>Criar Prova Manualmente</span>
+                </label>
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                  <input 
+                    type="radio" 
+                    name="tipo-prova" 
+                    id="tipo-pdf" 
+                    value="pdf"
+                    style="margin-right: 8px;"
+                  />
+                  <span>Anexar PDF com Questões</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="opcao-manual" class="opcao-prova">
+              <h3>Adicionar Nova Questão (Exemplo de Múltipla Escolha)</h3>
+
+              <div class="form-group">
+                <label for="pergunta">Pergunta da Questão</label>
+                <textarea
+                  id="pergunta"
+                  rows="3"
+                  placeholder="Digite aqui o texto da questão. Qual é o valor de x na equação 2x + 5 = 15?"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Alternativas e Resposta Correta (Selecione o Rádio)</label>
+                <div class="alternatives-grid">
+                  <div class="alternative-input">
+                    <input
+                      type="radio"
+                      name="resposta-correta"
+                      id="correta-a"
+                      value="a"
+                    />
+                    <span class="alternative-label">A)</span>
+                    <input
+                      type="text"
+                      placeholder="Alternativa A: x = 5"
+                    />
+                  </div>
+
+                  <div class="alternative-input">
+                    <input
+                      type="radio"
+                      name="resposta-correta"
+                      id="correta-b"
+                      value="b"
+                    />
+                    <span class="alternative-label">B)</span>
+                    <input
+                      type="text"
+                      placeholder="Alternativa B: x = 10"
+                    />
+                  </div>
+
+                  <div class="alternative-input">
+                    <input
+                      type="radio"
+                      name="resposta-correta"
+                      id="correta-c"
+                      value="c"
+                    />
+                    <span class="alternative-label">C)</span>
+                    <input
+                      type="text"
+                      placeholder="Alternativa C: x = 7.5"
+                    />
+                  </div>
+
+                  <div class="alternative-input">
+                    <input
+                      type="radio"
+                      name="resposta-correta"
+                      id="correta-d"
+                      value="d"
+                    />
+                    <span class="alternative-label">D)</span>
+                    <input
+                      type="text"
+                      placeholder="Alternativa D: x = 20"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn-professor"
+                id="salvarRascunhoQuestaoBtn"
+              >
+                Salvar Questão e Adicionar Rascunho
+              </button>
+            </div>
+
+            <div id="opcao-pdf" class="opcao-prova" style="display: none;">
+              <h3>Anexar Prova em PDF</h3>
+              <div class="form-group">
+                <label for="provaPdf">Selecione o arquivo PDF com as questões</label>
+                <input type="file" id="provaPdf" name="provaPdf" accept=".pdf" />
+                <small style="display: block; margin-top: 8px; color: #666;">
+                  Anexe um arquivo PDF contendo as questões da prova. O PDF será disponibilizado para os alunos realizarem a prova.
+                </small>
+              </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+              <button
+                type="submit"
+                class="btn-professor btn-primary"
+                id="publicarProvaBtn"
+              >
+                Finalizar e Publicar Prova
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div id="aluno-view" class="role-content">
+          <div class="aluno-header">
+            <h2>Provas e Atividades Pendentes</h2>
+            <button id="open-grades-modal" class="btn-professor btn-primary">
+              Notas Anteriores
+            </button>
+          </div>
+
+          <p class="section-description">
+            Clique em "Iniciar Prova" para começar uma avaliação.
+          </p>
+
+          <ul id="provasPendentesLista" class="provas-lista"></ul>
+        </div>
+      </section>
+
+      <section id="sobre" class="section">
+        <div style="position: relative;">
+          <h1>Sobre o Projeto S.U.B.</h1>
+          <button
+            id="logoutBtn"
+            class="logout-btn"
+            title="Sair da conta"
+            onclick="logout()"
+          >
+            Sair da Conta
+          </button>
+        </div>
+        <div class="sobre-content">
+          <div class="sobre-intro">
+            <h2>Sistema Único de Boletim</h2>
+            <p class="sobre-descricao">
+              O <strong>S.U.B. – Sistema Único de Boletim</strong> é uma
+              ferramenta digital educacional projetada para centralizar, organizar
+              e simplificar o acompanhamento da vida escolar dos estudantes. A
+              plataforma integra, em um só ambiente, informações essenciais como
+              notas, frequência, planejamento de aulas e comunicação direta entre
+              professores e alunos.
+            </p>
+          </div>
+
+          <div class="pilares-container">
+            <h3 class="sobre-subtitle">A sigla S.U.B. representa os pilares do nosso sistema:</h3>
+            <div class="pilares-grid">
+              <div class="pilar-card" data-pilar="S">
+                <div class="pilar-icon">S</div>
+                <div class="pilar-content">
+                  <h4><strong>S: Sistema</strong></h4>
+                  <p>Uma plataforma tecnológica robusta que integra múltiplos recursos de acompanhamento escolar.</p>
+                </div>
+              </div>
+              <div class="pilar-card" data-pilar="U">
+                <div class="pilar-icon">U</div>
+                <div class="pilar-content">
+                  <h4><strong>U: Único</strong></h4>
+                  <p>Um ambiente centralizado que evita a dispersão de informações e facilita o acesso para toda a comunidade escolar.</p>
+                </div>
+              </div>
+              <div class="pilar-card" data-pilar="B">
+                <div class="pilar-icon">B</div>
+                <div class="pilar-content">
+                  <h4><strong>B: Boletim</strong></h4>
+                  <p>O coração do sistema, focado no registro transparente e na apresentação clara do desempenho acadêmico.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="funcionalidades-container">
+            <h3 class="sobre-subtitle">Principais Funcionalidades</h3>
+            <div class="funcionalidades-grid">
+              <div class="funcionalidade-card">
+                <div class="funcionalidade-icon">📊</div>
+                <h4><strong>Painel Intuitivo</strong></h4>
+                <p>Visão geral do desempenho, agenda e próximos eventos.</p>
+              </div>
+              <div class="funcionalidade-card">
+                <div class="funcionalidade-icon">📝</div>
+                <h4><strong>Boletim Digital</strong></h4>
+                <p>Acesso fácil às notas e médias por bimestre.</p>
+              </div>
+              <div class="funcionalidade-card">
+                <div class="funcionalidade-icon">📚</div>
+                <h4><strong>Plano de Aula</strong></h4>
+                <p>Professores podem criar e compartilhar planos de aula detalhados, com opção de anexar PDFs.</p>
+              </div>
+              <div class="funcionalidade-card">
+                <div class="funcionalidade-icon">✍️</div>
+                <h4><strong>Provas Interativas</strong></h4>
+                <p>Criação e realização de provas online, com correção automática, cronômetro e embaralhamento de questões.</p>
+              </div>
+              <div class="funcionalidade-card">
+                <div class="funcionalidade-icon">💬</div>
+                <h4><strong>Comunicação Direta</strong></h4>
+                <p>Ferramenta de chat para comunicação entre professores e alunos, seja individualmente ou com a turma toda.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="autores-container">
+            <h3 class="sobre-subtitle">Autores</h3>
+            <p class="autores-intro">Este projeto foi desenvolvido por:</p>
+            <div class="autores-grid">
+              <div class="autor-card">
+                <div class="autor-avatar">RT</div>
+                <h4>Rafael Teixeira</h4>
+              </div>
+              <div class="autor-card">
+                <div class="autor-avatar">LS</div>
+                <h4>Lucas Santos</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="takeProvaModal" class="modal" style="display: none">
+      <div class="modal-content" style="max-width: 800px; width: 90%">
+        <div class="modal-header">
+          <h2 id="takeProvaTitle"></h2>
+          <div id="examTimer" class="exam-timer"></div>
+          <div id="takeProvaPdfLinkContainer" style="margin-top: 10px"></div>
+        </div>
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto">
+          <div id="takeProvaContent"></div>
+          <div id="takeProvaResult" class="take-prova-result"></div>
+          <div style="text-align: right; margin-top: 20px">
+            <button id="finalizarProvaBtn" class="btn-professor btn-primary">
+              Finalizar e Ver Nota
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="notas-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-btn-provas">&times;</span>
+        <h3>Notas Finais de Provas e Atividades</h3>
+        <p class="section-description" style="text-align: center">
+          Desempenho nas avaliações realizadas.
+        </p>
+
+        <div id="notasAnterioresContent" style="margin-top: 20px">
+          <!-- As notas salvas serão inseridas aqui -->
+        </div>
+      </div>
+    </div>
+
+    <div class="clock-container">
+      <div id="brasiliaClock" class="clock-widget" aria-live="polite"></div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+      <div class="modal-content card">
+        <h3>Configurações</h3>
+        <label>Modo Escuro <input type="checkbox" id="darkToggle" /></label>
+        <div style="margin-top: 8px">
+          <label>Tamanho da Fonte</label>
+          <input type="range" id="fontRange" min="12" max="22" />
+        </div>
+        <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <button class="btn small outline" id="resetSettingsBtn" style="background: transparent; border: 1px solid #ccc; color: #666;">
+            ↻ Restaurar Padrões
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn" id="saveSettingsBtn">Salvar</button>
+            <button class="btn small" id="closeSettingsBtn">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="custom-toast-container"></div>
+
+    <script src="./js/sub_settings.js"></script>
+    <script src="./js/sub.js"></script>
+  </body>
+</html>
