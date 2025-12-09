@@ -20,6 +20,7 @@
       return false;
     }
   }
+  
 
   function apply(s) {
     const root = document.documentElement;
